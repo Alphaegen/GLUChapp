@@ -1,21 +1,21 @@
+require('dotenv').config();
 const app = require('express')();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-const port = 3000;
 
 const { Pool, Client } = require('pg');
 // pools will use environment variables
 // for connection information
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'gluchatapp',
-  password: 'wbbRf3&R^P$q6xV*4W42iL@t',
-  port: 5432,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE,
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+server.listen(process.env.APP_PORT, () => {
+  console.log(`Server is running on port ${process.env.APP_PORT}`);
 });
 
 app.get('/', (req, res) => {
@@ -51,7 +51,8 @@ tech.on('connection', (socket) => {
   });
 });
 
-// Postgres
+// ! Postgres
+// Create users table if it doesn't exist
 pool.query('CREATE TABLE IF NOT EXISTS users (id int PRIMARY KEY, username varchar(45) NOT NULL, password varchar(450) NOT NULL)', (err, res) => {
   pool.end();
 });
