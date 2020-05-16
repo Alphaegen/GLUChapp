@@ -23,32 +23,24 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-app.get('/javascript', (req, res) => {
-  res.sendFile(__dirname + '/public/javascript.html');
+app.get('/chat', (req, res) => {
+  res.sendFile(__dirname + '/public/chat.html');
 });
 
-app.get('/swift', (req, res) => {
-  res.sendFile(__dirname + '/public/swift.html');
-});
+const chatServer = io.of('/tech');
 
-app.get('/css', (req, res) => {
-  res.sendFile(__dirname + '/public/css.html');
-});
-
-const tech = io.of('/tech');
-
-tech.on('connection', (socket) => {
+chatServer.on('connection', (socket) => {
   socket.on('join', (data) => {
     socket.join(data.room);
-    tech.in(data.room).emit('message', `New user joined ${data.room}!`);
+    chatServer.in(data.room).emit('message', `New user joined ${data.room}!`);
   });
 
   socket.on('message', (data) => {
-    tech.in(data.room).emit('message', data.msg);
+    chatServer.in(data.room).emit('message', data.msg);
   });
 
   socket.on('disconnect', () => {
-    tech.emit('message', 'user disconnected');
+    chatServer.emit('message', 'user disconnected');
   });
 });
 
