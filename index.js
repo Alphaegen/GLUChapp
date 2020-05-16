@@ -2,6 +2,7 @@ require('dotenv').config();
 const app = require('express')();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+const PORT = process.env.APP_PORT || 3000;
 
 const { Pool, Client } = require('pg');
 // pools will use environment variables
@@ -14,8 +15,8 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-server.listen(process.env.APP_PORT, () => {
-  console.log(`Server is running on port ${process.env.APP_PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 app.get('/', (req, res) => {
