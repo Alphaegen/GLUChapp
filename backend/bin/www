@@ -1,0 +1,61 @@
+const app = require('../app');
+const debug = require('debug')('backend:server');
+const http = require('http');
+const models = require('../models');
+
+const port = process.env.PORT || 3000;
+app.set('port', port);
+
+const server = http.createServer(app);
+const io = require('socket.io')(server);
+
+// Socket IO
+io.on('connection', (socket) => {
+  socket.on('join', async (room) => {
+    socket.join(room);
+    io.emit('roomJoined', room);
+  });
+  socket.on('message', async (data) => {
+    const { chatRoomName, author, message } = data;
+    const chatRoom = await models.ChatRoom.findAll({
+      where: { name: chatRoomName },
+    });
+    const chatRoomId = chatRoom[0].id;
+    const chatMessage = await models.ChatMessage.create({
+      chatRoomId,
+      author,
+      message: message,
+    });
+    io.emit('newMessage', chatMessage);
+  });
+});
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+function onListening() {
+  const addr = server.address();
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
