@@ -50,23 +50,36 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+      const user = prompt('Please enter your username');
       const socket = io('/tech');
       const room = 'javascript';
 
       $('form').submit(() => {
         let msg = $('#m').val();
 
-        socket.emit('message', { msg, room });
+        socket.emit('message', { msg, room, user });
         $('#m').val('');
         return false;
       });
 
       socket.on('connect', () => {
-        socket.emit('join', { room });
+        socket.emit('join', { room, user }, (ack) => {
+          ack.forEach((msg) => {
+            $('#messages').append($('<li>').text(`${msg.user_name}: ${msg.chat_text}`));
+          });
+        });
       });
 
-      socket.on('message', (msg) => {
-        $('#messages').append($('<li>').text(msg));
+      socket.on('message', (data) => {
+        $('#messages').append($('<li class="message">').text(`${data.user}: ${data.msg}`));
+      });
+
+      socket.on('join', (data) => {
+        $('#messages').append($('<li class="connect">').text(data));
+      });
+
+      socket.on('disconnect', (data) => {
+        $('#messages').append($('<li class="disconnect">').text(data));
       });
     </script>
   </body>
