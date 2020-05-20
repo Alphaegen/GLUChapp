@@ -7,13 +7,13 @@ const PORT = process.env.APP_PORT || 3000;
 const { Pool, Client } = require('pg');
 // pools will use environment variables
 // for connection information
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-});
+// const pool = new Pool({
+//   host: process.env.DB_HOST,
+//   database: process.env.DB_DATABASE,
+//   user: process.env.DB_USERNAME,
+//   password: process.env.DB_PASSWORD,
+//   port: process.env.DB_PORT,
+// });
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -46,6 +46,6 @@ chatServer.on('connection', (socket) => {
 
 // ! Postgres
 // Create users table if it doesn't exist
-pool.query('CREATE TABLE IF NOT EXISTS users (id int PRIMARY KEY, username varchar(45) NOT NULL, password varchar(450) NOT NULL)', (err, res) => {
-  pool.end();
-});
+// pool.query('CREATE TABLE IF NOT EXISTS users (id int PRIMARY KEY, username varchar(45) NOT NULL, password varchar(450) NOT NULL)', (err, res) => {
+//   pool.end();
+// });
