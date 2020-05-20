@@ -1,4 +1,4 @@
-export default class chatAPI {
+class chatAPI {
   constructor(client) {
     this.client = client;
   }
@@ -17,3 +17,5 @@ export default class chatAPI {
       .catch((err) => err.message);
   }
 }
+
+module.exports = chatAPI;
