@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon ./index.js --exec",
     "dev": "nodemon ./index.js --exec babel-node -e js",
-    "test": "DEBUG=* nodemon ./index.js --exec babel-node -e js"
+    "debug": "DEBUG=* nodemon ./index.js --exec babel-node -e js"
   },
   "author": "Niek Vlam",
   "license": "ISC",

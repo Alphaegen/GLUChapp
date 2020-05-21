@@ -50,10 +50,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+      // Vraag om een username en sla hem op, join de "tech" socket en geef aan dat de room "javascript" is
       const user = prompt('Please enter your username');
       const socket = io('/tech');
       const room = 'javascript';
 
+      // Wanneer je een bericht stuurt stuur je de msg, room en user mee en haal je de oude input weg uit de chat balk
       $('form').submit(() => {
         let msg = $('#m').val();
 
@@ -62,22 +64,27 @@
         return false;
       });
 
+      // Wanneer je connect stuur dan een join message met de room zodat de server je in de juiste room plaatst en wacht op een reactie met de history terug
       socket.on('connect', () => {
         socket.emit('join', { room, user }, (ack) => {
+          // Als je de history terug hebt plaats die dan bovenaan in de huidige chat
           ack.forEach((msg) => {
             $('#messages').append($('<li>').text(`${msg.user_name}: ${msg.chat_text}`));
           });
         });
       });
 
+      // Als er een message binnenkomt zet die in de chat
       socket.on('message', (data) => {
         $('#messages').append($('<li class="message">').text(`${data.user}: ${data.msg}`));
       });
 
+      // Als iemand joint zet een message in de chat
       socket.on('join', (data) => {
         $('#messages').append($('<li class="connect">').text(data));
       });
 
+      // Als iemand disconnect zet een message in de chat
       socket.on('disconnect', (data) => {
         $('#messages').append($('<li class="disconnect">').text(data));
       });
